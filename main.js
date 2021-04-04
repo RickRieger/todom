@@ -94,7 +94,7 @@ function calculatePercentage(){
   if (tasks.length === 0){
     percentage = 0;
   }
-  headerChild.innerText = ` Percentage complete: %${percentage}`;
+  headerChild.innerText = ` Percentage complete:${percentage}%`;
 };
 
 // Loops through the Tasks array and calls the above function 'displayEachTaskToDom'
