@@ -1,35 +1,5 @@
-// Objective: Build an application that manages a list of tasks.
-
-
-
-
-//    1.Build a collection of objects stored in the  
-//    tasks.js file and adhere to the following structure:
-
-// const tasks = [
-//   {
-//     category: 'Food Shopping',
-//     text: 'Onions, red potatoes, kale, and ginger',
-//     complete: false,
-//     priority:'red',
-//     id:0,
-//   };
-
-// optional 
-// console.log(tasks);
-
-
-
-
 // Defined as global variable so the innerText can be cleared from other functions
 const taskList = document.querySelector('#task-list');
-
-
-// REMOVE an item from the 'tasks' list array. 
-
-function removeItemFromTheTaskList(index){
-  tasks.splice(index, 1);
-}
 
 // DISPLAY 'tasks' objects to the DOM. 
 
@@ -40,10 +10,11 @@ const displayEachTaskToDom = function(task) {
   const divChild1 = document.createElement('div');
   const pTag = document.createElement('p');
   const divChild2 = document.createElement('div');
-  const iconComplete = document.createElement('i');
+  const checkBox = document.createElement('input');
+  checkBox.type = 'checkbox';
   const iconEdit = document.createElement('i');
   const iconTrash = document.createElement('i');
-  iconComplete.className = "fas fa-tasks";
+  checkBox.className = "";
   iconEdit.className = "fas fa-edit";
   iconTrash.className = "fas fa-trash-alt";
   parentDiv.className = "task-row";
@@ -52,7 +23,7 @@ const displayEachTaskToDom = function(task) {
   taskList.appendChild(parentDiv);
   parentDiv.appendChild(divChild1);
   parentDiv.appendChild(divChild2);
-  divChild1.appendChild(iconComplete);
+  divChild1.appendChild(checkBox);
   divChild1.appendChild(pTag);
   divChild2.appendChild(iconEdit);
   divChild2.appendChild(iconTrash);
@@ -63,7 +34,7 @@ const displayEachTaskToDom = function(task) {
   // Assign a matching ID to the DOM element based on it's index
   
   task.id = (tasks.indexOf(task));
-  iconComplete.id = `complete${task.id}`;
+  checkBox.id = `complete${task.id}`;
   iconEdit.id = `edit${task.id}`;
   iconTrash.id = `delete${task.id}`;
   
@@ -72,47 +43,67 @@ const displayEachTaskToDom = function(task) {
   if(task.complete === true){
     pTag.classList = 'complete';
   }
+  if (task.complete === true){
+    checkBox.checked = true;
+  };
+
 };
 
-// Calculate percentage completed of tasks
-function calculatePercentage(){
-  let numCompleted = 0;
-  for (const task of tasks){
-    if (task.complete){
-      numCompleted += 1;
-    }
-  }
-  const headerChild = document.querySelector('#header > p');
-  let percentage = (numCompleted / tasks.length) * 100;
-  
-  if (percentage % 1 !== 0){
-    percentage = percentage.toFixed(2);
-  }
-  if (tasks.length === 0){
-    percentage = 0;
-  }
-  headerChild.innerText = ` Percentage complete:${percentage}%`;
-};
+
 
 // Loops through the Tasks array and calls the above function 'displayEachTaskToDom'
 // for each item in the array.  
-function printAll(){
+function loopThroughTasksAndSetEventListeners(){
   for (const task of tasks){
     displayEachTaskToDom(task);
   }
   // Add an event listener to each new icon added for editing
+  const checkBoxes = document.querySelectorAll('input[type = checkbox]');
+  for (const box of checkBoxes){
+    box.addEventListener('change', editList);
+  }
   const icons = document.querySelectorAll('.fas');
   for (const icon of icons){
-    icon.addEventListener('click', editList);
+    icon.addEventListener('click', editList2);
   }
   calculatePercentage()
 };
 
+function grabNewTaskAndUpdateList(){
+  
+  const dropDownValue = document.querySelector('.form-select').value;
+  const taskInputBox = document.querySelector('#task');
+  const categoryInputBox = document.querySelector('#category');
+  const task = {
+    priority: dropDownValue,
+    category: categoryInputBox.value,
+    text: taskInputBox.value,
+    complete: false,
+  };
+  // Add a task to the array of tasks.
+  tasks.push(task);
+
+  // Clears the task list and clears the input fields.
+  taskList.innerText = '';
+  taskInputBox.value = '';
+  categoryInputBox.value = '';
+  // Update what should show in the browser.
+  loopThroughTasksAndSetEventListeners();
+  console.log(tasks);
+};
+
+// REMOVE an item from the 'tasks' list array. 
+
+function removeItemFromTheTaskList(index){
+  tasks.splice(index, 1);
+  loopThroughTasksAndSetEventListeners();
+  console.log(tasks);
+}
 
 // Handles an edit to the list of tasks
 function editList(){
-  
-  if(this.id.includes('complete')){
+ 
+  if(this.checked){
     const id = this.id;
     const index = id.charAt(id.length -1);
     tasks[index].complete = !tasks[index].complete;
@@ -120,7 +111,17 @@ function editList(){
       positiveElement.innerText = random(arrayOfPositiveCrap);
     }
   }
-  else if (this.id.includes('edit')){
+  else if (this.checked !== true){
+    const id = this.id;
+    const index = id.charAt(id.length -1);
+    tasks[index].complete = false;
+  }
+  taskList.innerHTML = ''
+  loopThroughTasksAndSetEventListeners();
+};
+
+function editList2(){
+  if (this.id.includes('edit')){
     console.log('edit');
   }
   else if (this.id.includes('delete')){
@@ -128,38 +129,28 @@ function editList(){
     const index = id.charAt(id.length -1);
     removeItemFromTheTaskList(index);
   }
-  taskList.innerHTML = ''
-  printAll();
-  
-};
+  taskList.innerText = ''
+  loopThroughTasksAndSetEventListeners();
 
-function doAllTheStuffForThisListOfToDoStuff(){
-  
-  const dropDownValue = document.querySelector('.form-select').value;
-  const taskInputBox = document.querySelector('#task').value;
-  const categoryInputBox = document.querySelector('#category').value;
-  let task = {
-    priority: dropDownValue,
-    category: categoryInputBox,
-    text: taskInputBox,
-    complete: false,
-  };
-  
-  // Clears the task list and clears the input fields.
-  taskList.innerHTML = '';
-  taskInputBox.value = '';
-  categoryInputBox.value;
-  // Add task to array of Tasks
-  tasks.push(task);
-  console.log(tasks);
-  // Update what's displayed
-  printAll();
-};
 
+}
 
 // listen for click event with submit button
 const addButton = document.querySelector('#submit');
-addButton.addEventListener('click', doAllTheStuffForThisListOfToDoStuff);
+addButton.addEventListener('click', grabNewTaskAndUpdateList);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -180,6 +171,6 @@ addButton.addEventListener('click', doAllTheStuffForThisListOfToDoStuff);
 // // A function that refreshes our page by calling each of the two above functions. Since printing all tasks onto the DOM is based on our tasks array, if we make a change to our tasks array, we can simply call this function, which will make our DOM match our tasks array by simply clearing the page and repopulating it according to our tasks' new state.
 
 // function updateBrowser(){
-//   printAll();
+//   loopThroughTasksAndSetEventListeners();
 //   clearList();
 // }
