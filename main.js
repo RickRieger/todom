@@ -20,7 +20,6 @@
 
 
 
-console.log("Your killin' it today!");
 
 // Defined as global variable so the innerText can be cleared from other functions
 const taskList = document.querySelector('#task-list');
@@ -44,8 +43,6 @@ const displayEachTaskToDom = function(task) {
   const iconComplete = document.createElement('i');
   const iconEdit = document.createElement('i');
   const iconTrash = document.createElement('i');
-  
-  
   iconComplete.className = "fas fa-tasks";
   iconEdit.className = "fas fa-edit";
   iconTrash.className = "fas fa-trash-alt";
@@ -138,20 +135,20 @@ function editList(){
 
 function doAllTheStuffForThisListOfToDoStuff(){
   
-  const inputBox = document.querySelector('#task');
-  const inputBoxValue = inputBox.value;
   const dropDownValue = document.querySelector('.form-select').value;
-  
+  const taskInputBox = document.querySelector('#task').value;
+  const categoryInputBox = document.querySelector('#category').value;
   let task = {
     priority: dropDownValue,
-    category: '',
-    text: inputBoxValue,
+    category: categoryInputBox,
+    text: taskInputBox,
     complete: false,
   };
   
   // Clears the task list and clears the input fields.
   taskList.innerHTML = '';
-  inputBox.value = '';
+  taskInputBox.value = '';
+  categoryInputBox.value;
   // Add task to array of Tasks
   tasks.push(task);
   console.log(tasks);
